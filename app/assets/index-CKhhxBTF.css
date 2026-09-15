@@ -1,0 +1,664 @@
+/*---------------------------------------------------------------------------------------------------------------------
+ * Project: Decay Function Web App
+ * Version: 0.1.0
+ * Date:    2026
+ * Author:  Rohin Gosling
+ *
+ * Description:
+ *
+ *   Provides the completed Fluent-inspired visual system, appearance themes, and responsive explorer layout.
+ *
+ * TODO:
+ *
+ *   1. None.
+ *
+ *-------------------------------------------------------------------------------------------------------------------*/
+
+/* Theme tokens and appearance modes. */
+
+.application-shell
+{
+    --page-background: #f5f5f5;
+    --card-background: #ffffff;
+    --panel-background: #fafafa;
+    --control-background: #ffffff;
+    --text-primary: #242424;
+    --text-secondary: #616161;
+    --scenario-label-color: #737373;
+    --border-color: #d1d1d1;
+    --accent-color: #0f6cbd;
+    --accent-contrast: #ffffff;
+    --error-color: #c50f1f;
+    --focus-color: #0f6cbd;
+    color: var(--text-primary);
+    background: var(--page-background);
+    color-scheme: light;
+}
+
+.application-shell[data-appearance="dark"]
+{
+    --page-background: #1b1a19;
+    --card-background: #292827;
+    --panel-background: #323130;
+    --control-background: #1f1f1f;
+    --text-primary: #ffffff;
+    --text-secondary: #d2d0ce;
+    --scenario-label-color: #a19f9d;
+    --border-color: #605e5c;
+    --accent-color: #62abf5;
+    --accent-contrast: #111111;
+    --error-color: #ff99a4;
+    --focus-color: #62abf5;
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark)
+{
+    .application-shell[data-appearance="system"]
+    {
+        --page-background: #1b1a19;
+        --card-background: #292827;
+        --panel-background: #323130;
+        --control-background: #1f1f1f;
+        --text-primary: #ffffff;
+        --text-secondary: #d2d0ce;
+        --scenario-label-color: #a19f9d;
+        --border-color: #605e5c;
+        --accent-color: #62abf5;
+        --accent-contrast: #111111;
+        --error-color: #ff99a4;
+        --focus-color: #62abf5;
+        color-scheme: dark;
+    }
+}
+
+/* Primary card structure and appearance controls. */
+
+.explorer-card
+{
+    width: min(100%, 64rem);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    background: var(--card-background);
+    box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 10%);
+}
+
+.card-header
+{
+    display: block;
+}
+
+.card-header h1
+{
+    width: 100%;
+    margin: 0;
+    font-size: clamp(1.45rem, 2.6vw, 2rem);
+    line-height: 1.08;
+}
+
+.introduction
+{
+    width: 100%;
+    max-width: none;
+    margin: 1rem 0 0;
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.control-group
+{
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.appearance-selector
+{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+}
+
+.appearance-label
+{
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.control-group legend
+{
+    padding: 0;
+    font-weight: 650;
+}
+
+.appearance-options
+{
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+    margin: 0;
+}
+
+.appearance-options label
+{
+    position: relative;
+}
+
+.appearance-options input
+{
+    position: absolute;
+    opacity: 0;
+}
+
+.appearance-options span
+{
+    display: flex;
+    min-height: 1.75rem;
+    padding: 0.25rem 0.55rem;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--control-background);
+    cursor: pointer;
+}
+
+.appearance-options input:checked+span
+{
+    border-color: var(--accent-color);
+    color: var(--accent-contrast);
+    background: var(--accent-color);
+}
+
+.appearance-options input:focus-visible+span
+{
+    outline: 0.15rem solid var(--focus-color);
+    outline-offset: 0.15rem;
+}
+
+.scenario-panel
+{
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Chart surface, equation overlay, and accessible labels. */
+
+.bias-chart
+{
+    --chart-panel-border-width: 1px;
+    --equation-panel-right-inset: 30px;
+    --equation-panel-top-inset: 31px;
+
+    position: relative;
+    height: 330px;
+    min-width: 0;
+    margin: 0;
+    padding: 1rem;
+    border: var(--chart-panel-border-width) solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--panel-background);
+}
+
+.bias-chart-canvas
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.method-equation
+{
+    position: absolute;
+    top: calc(var(--equation-panel-top-inset) - var(--chart-panel-border-width));
+    right: calc(var(--equation-panel-right-inset) - var(--chart-panel-border-width));
+    z-index: 2;
+    max-width: calc(100% - 3.5rem);
+    padding: 0.25rem 0.4rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    color: var(--text-primary);
+    background: var(--panel-background);
+    box-shadow: 0 0.1rem 0.3rem rgb(0 0 0 / 8%);
+    font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+    line-height: 1;
+}
+
+.method-equation math
+{
+    margin: 0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.method-equation[data-method="extended"] math
+{
+    font-size: clamp(0.58rem, 1.15vw, 0.75rem);
+}
+
+.vertical-axis-label
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0.25rem;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    writing-mode: horizontal-tb;
+    line-height: 1;
+    pointer-events: none;
+    transform: none;
+}
+
+.visually-hidden
+{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Current-scenario readout. */
+
+.scenario-readout
+{
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--panel-background);
+}
+
+.scenario-readout h2,
+.controls-section h2
+{
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.scenario-readout dl
+{
+    display: grid;
+    gap: 0.6rem;
+    margin: 1rem 0 0;
+}
+
+.scenario-readout dl div
+{
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(10rem, 1.2fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+}
+
+.scenario-readout dt,
+.scenario-readout dd
+{
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.scenario-readout dt
+{
+    color: var(--scenario-label-color);
+    font-weight: 700;
+}
+
+.scenario-readout dt var
+{
+    font-style: italic;
+    color: var(--accent-color);
+}
+
+.scenario-readout dd
+{
+    margin: 0;
+    text-align: left;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+/* Model controls and validation feedback. */
+
+.controls-section
+{
+    margin-top: 2rem;
+}
+
+.control-list
+{
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.control-group
+{
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--panel-background);
+}
+
+.control-symbol
+{
+    margin-left: 0.5rem;
+    color: var(--accent-color);
+    font-family: Cambria, Georgia, serif;
+    font-style: italic;
+}
+
+.control-description
+{
+    margin: 0.4rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.numeric-inputs
+{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7rem;
+    gap: 1rem;
+    align-items: end;
+    margin-top: 0.85rem;
+}
+
+.numeric-inputs-single
+{
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.range-field,
+.value-field,
+.select-field
+{
+    display: grid;
+    gap: 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.select-field
+{
+    width: 100%;
+    margin-top: 0.85rem;
+}
+
+input[type="text"],
+input[type="number"],
+select
+{
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.3rem;
+    color: var(--text-primary);
+    background: var(--control-background);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+}
+
+input[type="range"]
+{
+    width: 100%;
+    min-height: 2.5rem;
+    accent-color: var(--accent-color);
+}
+
+input[aria-invalid="true"]
+{
+    border-color: var(--error-color);
+}
+
+input:focus-visible,
+select:focus-visible
+{
+    outline: 0.15rem solid var(--focus-color);
+    outline-offset: 0.1rem;
+}
+
+.control-error
+{
+    margin: 0.65rem 0 0;
+    color: var(--error-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Supporting context and reset action. */
+
+.supporting-note
+{
+    margin: 1.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.card-actions
+{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.project-links
+{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.project-links a
+{
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.project-links a:hover
+{
+    text-decoration: underline;
+}
+
+.project-links a:focus-visible
+{
+    outline: 0.15rem solid var(--focus-color);
+    outline-offset: 0.1rem;
+    border-radius: 0.15rem;
+}
+
+.reset-button
+{
+    min-width: 5.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.3rem;
+    color: var(--text-primary);
+    background: var(--control-background);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.reset-button:hover
+{
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.reset-button:active
+{
+    background: var(--panel-background);
+}
+
+.reset-button:focus-visible
+{
+    outline: 0.15rem solid var(--focus-color);
+    outline-offset: 0.1rem;
+}
+
+/* Responsive layout adjustments. */
+
+@media (min-width: 48rem)
+{
+    .scenario-panel
+    {
+        grid-template-columns: minmax(0, 1.8fr) minmax(14rem, 1fr);
+    }
+
+    .control-list
+    {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 32rem)
+{
+    .application-shell
+    {
+        padding: 0.75rem;
+        place-items: start center;
+    }
+
+    .numeric-inputs
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .numeric-inputs-single
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .bias-chart
+    {
+        padding: 0.75rem;
+    }
+
+    .method-equation
+    {
+        max-width: calc(100% - 2.5rem);
+    }
+
+    .method-equation[data-method="extended"] math
+    {
+        font-size: 0.58rem;
+    }
+}
+/*---------------------------------------------------------------------------------------------------------------------
+ * Project: Decay Function Web App
+ * Version: 0.1.0
+ * Date:    2026
+ * Author:  Rohin Gosling
+ *
+ * Description:
+ *
+ *   Establishes the document baseline and full-page application mount layout.
+ *
+ * TODO:
+ *
+ *   1. None.
+ *
+ *-------------------------------------------------------------------------------------------------------------------*/
+
+/* Document baseline. */
+
+:root
+{
+    color: #242424;
+    background: #f5f5f5;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+*
+{
+    box-sizing: border-box;
+}
+
+body
+{
+    min-width: 20rem;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Full-page React mount. */
+
+.application-shell
+{
+    display: grid;
+    min-height: 100vh;
+    padding: 1.5rem;
+    place-items: center;
+}
+
+/* Legacy foundation-shell styles retained for the development scaffold. */
+
+.foundation-card
+{
+    width: min(100%, 46rem);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    border: 1px solid #d1d1d1;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 8%);
+}
+
+.foundation-card h1
+{
+    max-width: 18ch;
+    margin: 0;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    line-height: 1.05;
+}
+
+.foundation-card p:last-child
+{
+    max-width: 60ch;
+    margin: 1.5rem 0 0;
+    color: #616161;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.eyebrow
+{
+    margin: 0 0 0.75rem;
+    color: #0f6cbd;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
